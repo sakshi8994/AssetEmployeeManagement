@@ -119,6 +119,6 @@ public class SeatController {
 		return ResponseEntity.ok(seatService.searchSeat(seatId,floor,colNum,rowNum,status,pageable)) ;
 		
 	}
-	
+
 	
 }

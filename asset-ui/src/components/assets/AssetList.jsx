@@ -377,7 +377,9 @@ const showSnackbar = (message, severity) => {
 
 
   return (
-    <Box sx={{ height: "600px", width: "100%" }}>
+    <Box sx={{ 
+      height: "600px",
+       width: "100%" }}>
       <Typography variant="h6" mb={2}>
         Assets
       </Typography>

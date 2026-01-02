@@ -4,6 +4,7 @@ import { Stack, TextField , MenuItem} from '@mui/material'
 
 function SeatFilters({seatId , setSeatId,status,setStatus,floor,setFloor, colNum,setColNum,rowNum,setRowNum}) {
   return (
+    <>
    <Stack direction="row" spacing={2} mb={2}>
    
   <TextField
@@ -48,6 +49,7 @@ function SeatFilters({seatId , setSeatId,status,setStatus,floor,setFloor, colNum
        />
 
    </Stack>
+   </>
   )
 }
 

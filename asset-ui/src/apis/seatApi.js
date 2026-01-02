@@ -31,7 +31,7 @@ export const releaseSeat =(seatId)=>
   api.post(`/seats/${seatId}/release`)
 
 export const  getSeatByStatus=(status)=>
-  api.get(`/seats/${status}`)
+  api.get(`/seats/status/${status}`)
 
 export const addFloor=(params)=>
   api.post("/seats/floor",null,{params});

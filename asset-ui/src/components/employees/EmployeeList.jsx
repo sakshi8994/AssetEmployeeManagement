@@ -14,6 +14,7 @@ import EmployeeFilter from "../employees/EmployeeFilter"
 import { exportToExcel } from "../../utils/exportToExcel";
 import DownloadIcon from "@mui/icons-material/Download";
 import AssignSeatDialog from '../seats/AssignSeatDialog';
+import AssignSeatDialogForEmpPage from './AssignSeatDialogForEmpPage';
 
 
 function EmployeeList() {
@@ -39,8 +40,7 @@ const [designation ,setDesignation]=useState("");
 const [email,setEmail] =useState("");
 const [employeeId ,setEmployeeId]  =useState("");
 const [seat , setSeat]=useState("");
-
-
+const [ openAssignSeatDialog,setOpenAssignSeatDialog] =useState(false);
 
 
 useEffect(()=>{
@@ -85,8 +85,8 @@ try{
 
 const handleAddSeat=(employee)=>{
 
-  setOpenAssignSeat(true);
-  selectedEmployee(true);
+  setOpenAssignSeatDialog(true);
+  setSelectedEmployee(employee);
  
   console.log("add seat for employee : ",employee)
 
@@ -316,6 +316,19 @@ const columns = [
          
       />
 
+
+     <AssignSeatDialogForEmpPage
+       openAssignSeatDialog={openAssignSeatDialog}
+       setOpenAssignSeatDialog={setOpenAssignSeatDialog}
+       
+      
+       employee={selectedEmployee}
+       
+       onAssigned={()=>{setOpenAssignSeatDialog(false);
+           loadEmployee(page, pageSize);}
+
+       }
+     />
     
 
       <Snackbar

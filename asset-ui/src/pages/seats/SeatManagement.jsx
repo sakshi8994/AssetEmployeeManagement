@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { searchSeats ,updateSeat ,deleteSeat, addFloor, assignSeat, releaseSeat } from "../../apis/seatApi";
+import { searchSeats ,updateSeat ,deleteSeat, addFloor, assignSeat, releaseSeat , getAllSeats } from "../../apis/seatApi";
 import SeatTable from "../../components/seats/SeatTable";
 import SeatFilters from "../../components/seats/SeatFilters";
-import { Box , Typography ,Button } from "@mui/material";
+import { Box , Typography ,Button,ToggleButton,ToggleButtonGroup } from "@mui/material";
 import EditSeatDialog from "../../components/seats/EditSeatDialog";
 import DeleteSeatDialog from "../../components/seats/DeleteSeatDialog";
 import AddFloorDialog from "../../components/seats/AddFloorDialog";
@@ -20,6 +20,7 @@ const [loading, setLoading] = useState(false);
 const [page, setPage] = useState(0);
 const [pageSize, setPageSize] = useState(5);
 const [total, setTotal] = useState(0);
+const [totalCount , setTotalCount]=useState(0)
 
 const [floor, setFloor] = useState("");
 const [status, setStatus] = useState("");
@@ -47,9 +48,22 @@ useEffect(()=>{
 loadSeats();
 },[])
 
-useEffect(()=>{
-loadSeats();
-},[pageSize ,page ,floor, seatId, status,colNum,rowNum])
+// useEffect(()=>{
+  
+  
+//    loadSeats();
+
+// },[pageSize ,page ,floor, seatId, status,colNum,rowNum])
+
+
+useEffect(() => {
+  if (viewMode === "table") {
+    loadSeats();
+  } else {
+    loadAllSeatsForGrid();
+  }
+}, [viewMode, page, pageSize, floor, seatId, status, colNum, rowNum]);
+
 
 const loadSeats = async()=>{
 setLoading(true);
@@ -80,6 +94,25 @@ console.error("Failed to load seats", err);
 }
 
 
+
+}
+
+
+const  loadAllSeatsForGrid= async()=>{
+  setLoading(true);
+  try{
+const res = await getAllSeats();
+setSeats(res.data);
+setTotalCount(res.data.length)
+console.log("Get All seats : ",res);
+  }catch(err){
+
+    console.log(err);
+
+  }finally{
+       setLoading(false);
+
+  }
 
 }
 
@@ -174,6 +207,7 @@ setSelectedSeat(seat);
     loadEmployees();
 }
 
+
 const handleAssignSeat = async()=>{
 
   try{
@@ -204,8 +238,38 @@ console.log("err",err)
   }
 }
 
+
+const gridView=()=>{
+  loadAllSeatsForGrid();
+  console.log("Seats in grid : " ,seats);
+   setViewMode("grid");
+}
+
   return (
-  <Box sx={{ height: "600px", width: "100%" }}>
+
+     <Box
+    sx={{
+      minHeight: "100vh",
+      width: "100%",
+      display: "flex",
+      justifyContent: "center",
+      backgroundColor: "#0f0f0f",
+      py: 3,
+    }}
+  >
+    
+  <Box 
+  sx={{ 
+    height:"100%",
+    width: "100%",
+        maxWidth: "1200px",    
+        // border: "3px solid red",
+        borderRadius: 2,
+        p: 2,                   
+        backgroundColor: "#1a1a1a",
+    }}
+  
+  >
 
    <Typography variant="h6" mb={2}>
         Seats
@@ -214,7 +278,7 @@ console.log("err",err)
      
 
 
-  <SeatFilters
+   {viewMode==="table" && <SeatFilters
   seatId={seatId}
    setSeatId={setSeatId}
    status={status}
@@ -225,11 +289,18 @@ console.log("err",err)
    setColNum={setColNum}
    rowNum={rowNum}
    setRowNum={setRowNum}
-  />
+  /> }
   <Button onClick={()=>setOpenAddFloorDialog(true)}>Add Floor</Button>
 
-   <Button onClick={() => setViewMode("table")}>Table</Button>
-<Button onClick={() => setViewMode("grid")}>Grid</Button>
+  
+<ToggleButtonGroup>
+
+  <ToggleButton onClick={() => setViewMode("table")} value="table">Table View</ToggleButton>
+  <ToggleButton onClick={gridView} value="grid">Grid View</ToggleButton>
+
+</ToggleButtonGroup>
+
+
 
 
 {viewMode === "table" ? (
@@ -295,6 +366,8 @@ console.log("err",err)
   />
 
   </Box>  
+  </Box>
+   
   )
 }
 

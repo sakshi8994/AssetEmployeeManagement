@@ -2,7 +2,7 @@ import React from 'react'
 import { Stack, TextField, MenuItem, Button } from "@mui/material";
 function AssetFilters({brand,setBrand,model,setModel,employee,setEmployee,status,setStatus,categoryId,setCategoryId,categoryList,clearFilters}) {
   return (
-    <Stack direction="row" spacing={2} mb={2}>
+    <Stack direction="row" spacing={2} mb={2} >
  
  
 

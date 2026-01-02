@@ -82,9 +82,9 @@ function SeatTable({rows, total,page,pageSize,setPage,setPageSize,onEditSeat,onD
   },
     ]
   return (
-    <Box sx={{ height: "600px", width: "100%" }}>
     
-      { rows && <DataGrid
+    
+      <DataGrid
       rows={rows}
       columns={columns}
       getRowId={(row)=>row.seatId}
@@ -100,8 +100,9 @@ function SeatTable({rows, total,page,pageSize,setPage,setPageSize,onEditSeat,onD
       pageSizeOptions={[5, 10, 20]}
       disableRowSelectionOnClick
       density="compact"
-      />}
-      </Box>
+      />
+
+     
     
   )
 }
