@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,10 +36,13 @@ public class EmployeeController {
 
 	private final EmployeeService employeeService;
 	
+	@PreAuthorize("hasAnyRole('ADMIN','USER')")
 	@PostMapping
 	public ResponseEntity<Employee> create(@RequestBody EmployeeDTO employeeDTO){
 		return ResponseEntity.status(HttpStatus.CREATED).body(employeeService.createEmployee(employeeDTO));
 	}
+	
+	@PreAuthorize("hasAnyRole('ADMIN','USER')")
 	@GetMapping
 	public ResponseEntity<List<Employee>>getAll(){
 		List<Employee>list = employeeService.getAllEmployee();
@@ -47,23 +51,32 @@ public class EmployeeController {
 		    }
 		return ResponseEntity.ok(list);
 	}
+	
+	@PreAuthorize("hasAnyRole('ADMIN','USER')")
 	@GetMapping("/{id}")
 	public ResponseEntity<Employee>getById(@PathVariable Long id ){
 		return ResponseEntity.ok(employeeService.getEmployeeById(id));
 	}
 	
+	
+//	@PreAuthorize("hasAnyRole('ADMIN','USER')")
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{id}")
 	public ResponseEntity<Employee>update(@PathVariable Long id,@RequestBody EmployeeDTO employeeDTO){
 	 return ResponseEntity.status(HttpStatus.OK)
              .body(employeeService.updateEmployee(id, employeeDTO))	;
 	}
 	
+//	@PreAuthorize("hasAnyRole('ADMIN','USER')")
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String>delete(@PathVariable Long id){
 		employeeService.deleteEmployee(id);
 		return ResponseEntity.status(HttpStatus.OK)
                 .body("Employee Deleted Successfully");
 	}
+	
+	@PreAuthorize("hasAnyRole('ADMIN','USER')")
 	
 	 @GetMapping("/search")
 	    public ResponseEntity<Page<Employee>> search(

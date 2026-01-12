@@ -15,12 +15,15 @@
     "@mui/icons-material": "^7.3.6",
     "@mui/material": "^7.3.6",
     "@mui/x-data-grid": "^8.22.1",
+    "@mui/x-date-pickers": "^8.23.0",
     "axios": "^1.13.2",
     "bootstrap": "^5.3.8",
+    "dayjs": "^1.11.19",
     "file-saver": "^2.0.5",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.11.0",
+    "recharts": "^3.6.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

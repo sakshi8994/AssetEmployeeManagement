@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,11 +34,14 @@ public class SeatController {
 
 	private final SeatService seatService;
 	
+	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
 	public ResponseEntity<Seat> create(@RequestBody SeatDTO seatDTO) {
 		return  ResponseEntity.status(HttpStatus.CREATED).body(seatService.createSeat(seatDTO));
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/floor")
 	public ResponseEntity<String> createFloor(@RequestParam Integer floor,@RequestParam Integer columns, @RequestParam Integer rows){
 		seatService.createFloor(floor,columns,rows);
@@ -46,6 +50,7 @@ public class SeatController {
 		
 	}
 	
+	@PreAuthorize("hasAnyRole('ADMIN','USER')")
 	@GetMapping
 	public ResponseEntity<List<Seat>>getAll(){
 		List<Seat>list=seatService.getAllSeats();
@@ -55,6 +60,7 @@ public class SeatController {
 		return ResponseEntity.ok(list);
 	}
 	
+	@PreAuthorize("hasAnyRole('ADMIN','USER')")
 	@GetMapping("/{id}")
 	public ResponseEntity<Seat>getById(@PathVariable Long id){
 		  Seat seat=seatService.getSeatById(id);
@@ -62,12 +68,15 @@ public class SeatController {
 		return ResponseEntity.ok(seat);
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
+
 	@PutMapping("/{id}")
 	public ResponseEntity<Seat>update(@PathVariable Long id , @RequestBody SeatDTO seatDTO){
 		return ResponseEntity.status(HttpStatus.OK)
                 .body(seatService.updateSeat(id, seatDTO));
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String >delete(@PathVariable Long id) {
 		
@@ -75,7 +84,8 @@ public class SeatController {
 		return ResponseEntity.status(HttpStatus.OK)
                 .body("Seat deleted successfully");
 	}
-	
+
+	@PreAuthorize("hasAnyRole('ADMIN','USER')")
 	@PostMapping("/{seatId}/assign")
 	public ResponseEntity<Seat> assignSeat(
 	        @PathVariable Long seatId,
@@ -83,12 +93,14 @@ public class SeatController {
 
 	    return ResponseEntity.ok(seatService.assignSeat(seatId, employeeId));
 	}
-
+	
+	@PreAuthorize("hasAnyRole('ADMIN','USER')")
 	@PostMapping("/{seatId}/release")
 	public ResponseEntity<Seat> releaseSeat(@PathVariable Long seatId) {
 	    return ResponseEntity.ok(seatService.releaseSeat(seatId));
 	}
 	
+	@PreAuthorize("hasAnyRole('ADMIN','USER')")
 	@GetMapping("/status/{status}")
 	public ResponseEntity<List<Seat>> getListByStatus(@PathVariable String status){
 		List<Seat>list = seatService.getListByStatus(status);
@@ -96,7 +108,7 @@ public class SeatController {
 	}
 	
 	
-
+	@PreAuthorize("hasAnyRole('ADMIN','USER')")
 	@GetMapping("/search")
 	public ResponseEntity<Page<Seat>>search( 
 			@RequestParam(required = false) Long seatId,

@@ -12,4 +12,6 @@ import com.sg.entities.Seat;
 public interface SeatRepository extends JpaRepository<Seat, Long>,JpaSpecificationExecutor<Seat> {
             
 	List<Seat>findByStatus(String status);
+
+	Long countByStatus(String string);
 }

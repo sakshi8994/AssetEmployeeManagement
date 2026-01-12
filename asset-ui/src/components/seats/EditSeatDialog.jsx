@@ -10,7 +10,7 @@ function EditSeatDialog({openEditSeat,setOpenEditSeat , selectedSeat,setSelected
             Edit Seat Data
         </DialogTitle>
         <DialogContent>
-           <TextField 
+           {/* <TextField 
                   label="Floor"
                   fullWidth
                   margin="dense"
@@ -21,36 +21,9 @@ function EditSeatDialog({openEditSeat,setOpenEditSeat , selectedSeat,setSelected
                           floor:e.target.value,
                       })
                   }
-                  />
-
-             <TextField 
-                  label="Column"
-                  fullWidth
-                  margin="dense"
-                  value={selectedSeat?.colNum || ""}
-                  onChange={(e)=>
-                      setSelectedSeat({
-                          ...selectedSeat,
-                          colNum:e.target.value,
-                      })
-                  }
-                  />
-
-            
-             <TextField 
-                  label="Column"
-                  fullWidth
-                  margin="dense"
-                  value={selectedSeat?.colNum || ""}
-                  onChange={(e)=>
-                      setSelectedSeat({
-                          ...selectedSeat,
-                          colNum:e.target.value,
-                      })
-                  }
-                  />
-
-                   <TextField 
+                /> */}
+     
+       {/* <TextField 
                   label="Row"
                   fullWidth
                   margin="dense"
@@ -58,10 +31,27 @@ function EditSeatDialog({openEditSeat,setOpenEditSeat , selectedSeat,setSelected
                   onChange={(e)=>
                       setSelectedSeat({
                           ...selectedSeat,
+                          rowNum:e.target.value,
+                      })
+                  }
+                  /> */}
+            
+
+{/*             
+             <TextField 
+                  label="Column"
+                  fullWidth
+                  margin="dense"
+                  value={selectedSeat?.colNum || ""}
+                  onChange={(e)=>
+                      setSelectedSeat({
+                          ...selectedSeat,
                           colNum:e.target.value,
                       })
                   }
-                  />
+                  /> */}
+
+                 
 
                   <TextField
       select

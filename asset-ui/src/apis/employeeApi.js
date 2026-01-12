@@ -1,22 +1,27 @@
-import api from "./axiosConfig";
 
-export const searchEmployee = (params) =>
-  api.get("/employee/search", { params });
+import axiosInstance from "../apis/axiosInstance";
+
+
+export const searchEmployee = (params) =>{
+  
+  return axiosInstance.get("/api/employee/search", { params });
+}
 
 export const addEmployee = (data) =>
-  api.put("/employee", data);
+{ 
+  return axiosInstance.post("/api/employee", data);}
 
 export const getAllEmployee = () =>
-  api.get("/employee");
+  axiosInstance.get("/api/employee");
 
 export const getEmployeeById = (id) =>
-  api.get(`/employee/${id}`);
+  axiosInstance.get(`/api/employee/${id}`);
 
 
 export const updateEmployee = (id,data) =>
-  api.put(`/employee/${id}`,data);
+  axiosInstance.put(`/api/employee/${id}`,data);
 
 export const deleteEmployee = (id) =>
-  api.delete(`/employee/${id}`);
+  axiosInstance.delete(`/api/employee/${id}`);
 
 

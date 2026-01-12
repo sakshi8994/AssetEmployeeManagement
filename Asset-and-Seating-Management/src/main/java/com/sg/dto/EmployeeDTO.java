@@ -10,7 +10,7 @@ public class EmployeeDTO {
 	private String email;
 	private String department;
 	private String designation;
-	
+	 private String role;
 	private Long seatId;
 	
 	

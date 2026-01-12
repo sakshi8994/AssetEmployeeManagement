@@ -1,25 +1,26 @@
 import api from "./axiosConfig";
 import axios from "axios";
+import axiosInstance from "../apis/axiosInstance";
 
 export const getAssets = (params) =>
-  api.get("/assets/search", { params });
+  axiosInstance.get("/api/assets/search", { params });
 
 export const getAssetById = (id) =>
-  api.get(`/assets/${id}`);
+  axiosInstance.get(`/api/assets/${id}`);
 
 export const createAsset = (data) =>
-  api.post("/assets", data);
+  axiosInstance.post("/api/assets", data);
 
 export const updateAsset = (id, data) =>
-  api.put(`/assets/${id}`, data);
+  axiosInstance.put(`/api/assets/${id}`, data);
 
 export const deleteAsset = (id) =>
-  api.delete(`/assets/${id}`);
+  axiosInstance.delete(`/api/assets/${id}`);
 
 export const assignAsset = (id, employeeId) =>
-  api.post(`/assets/${id}/assign`, null, {
+  axiosInstance.post(`/api/assets/${id}/assign`, null, {
     params: { employeeId }
   });
 
 export const revokeAsset = (assetId) =>
-  api.post(`/assets/${assetId}/revoke`);
+  axiosInstance.post(`/api/assets/${assetId}/revoke`);

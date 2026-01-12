@@ -1,39 +1,40 @@
 import api from "./axiosConfig";
+import axiosInstance from "../apis/axiosInstance";
 
 export const addSeat = (data) =>
-  api.post("/seats",data);
+  axiosInstance.post("/api/seats",data);
 
 
 export const searchSeats = (params) =>
-  api.get("/seats/search",{params});
+ axiosInstance.get("/api/seats/search",{params});
 
 export const getAllSeats = () =>
-  api.get("/seats");
+  axiosInstance.get("/api/seats");
 
 
 export const getSeatById = (id) =>
-  api.get(`/seats/${id}`);
+  axiosInstance.get(`/api/seats/${id}`);
 
 export const updateSeat=(id,data)=>
-    api.put(`/seats/${id}`,data);
+    axiosInstance.put(`/api/seats/${id}`,data);
 
 export const deleteSeat=(id)=>
-    api.delete(`/seats/${id}`);
+    axiosInstance.delete(`/api/seats/${id}`);
 
 export const assignSeat =(seatId , employeeId)=> 
-    api.post(`/seats/${seatId}/assign`,null ,{
+    axiosInstance.post(`/api/seats/${seatId}/assign`,null ,{
      
       params:{employeeId}
 
     })
 
 export const releaseSeat =(seatId)=>
-  api.post(`/seats/${seatId}/release`)
+  axiosInstance.post(`/api/seats/${seatId}/release`)
 
 export const  getSeatByStatus=(status)=>
-  api.get(`/seats/status/${status}`)
+  axiosInstance.get(`/api/seats/status/${status}`)
 
 export const addFloor=(params)=>
-  api.post("/seats/floor",null,{params});
+  axiosInstance.post("/api/seats/floor",null,{params});
 
 

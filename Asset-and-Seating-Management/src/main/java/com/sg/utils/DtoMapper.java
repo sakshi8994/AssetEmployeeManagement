@@ -32,7 +32,7 @@ public class DtoMapper {
 		if(c==null) return null;
 		
 		CategoryDTO dto = new CategoryDTO();
-		dto.setCategory(c.getCategoryId());
+//		dto.setCategory(c.getCategoryId());
 		dto.setName(c.getName());
 		
 		return dto;

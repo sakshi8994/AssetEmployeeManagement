@@ -50,7 +50,7 @@ renderInput={(params)=>(
 variant="contained"
 onClick={handleAssign}
 
-disabled={selectedAsset !== "Available"}
+// disabled={selectedAsset !== "Available"}
 
 >
 Assign

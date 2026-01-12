@@ -1,5 +1,6 @@
 package com.sg.services;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.jspecify.annotations.Nullable;
@@ -14,7 +15,7 @@ public interface AssetHistoryService {
 	List<AssetHistory> getHistoryByAsset(Long assetId);
 	List<AssetHistory>getHistoryByEmployee(Long employeeId);
 	
-	Page<AssetHistoryResponseDTO>search(Long historyId, String action, Long assetId, String assetTag, Long employeeId, String employeeName,
+	Page<AssetHistoryResponseDTO>search(Long historyId, String action, Long assetId, String assetTag, Long employeeId, String employeeName,LocalDate date,
 			Pageable pageable);
 	
 	Page<AssetHistoryResponseDTO>getAll(Pageable pageable);

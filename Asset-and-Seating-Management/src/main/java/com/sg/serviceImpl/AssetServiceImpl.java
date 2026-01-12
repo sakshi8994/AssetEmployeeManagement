@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.sg.dto.AssetCreateDTO;
@@ -21,6 +22,7 @@ import com.sg.repositories.AssetHistoryRepository;
 import com.sg.repositories.AssetRepository;
 import com.sg.repositories.CategoryRepository;
 import com.sg.repositories.EmployeeRepository;
+import com.sg.security.CustomUserDetails;
 import com.sg.services.AssetService;
 import com.sg.specification.AssetSpecification;
 
@@ -38,7 +40,18 @@ public class AssetServiceImpl implements AssetService   {
 	private final AssetHistoryRepository historyRepo;
 	 private final CategoryRepository categoryRepo;
 	 
-	 
+	 private Employee getLoggedInEmployee() {
+		 Object principal = SecurityContextHolder
+				 .getContext()
+				 .getAuthentication()
+				 .getPrincipal();
+		 if(!(principal instanceof CustomUserDetails user)) {
+			 throw new RuntimeException("Unauthenticated access");
+		 }
+		 
+		 return employeeRepo.findById(user.getUserId())
+				 .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+	 }
 
 	@Override
 	public Asset createAsset( AssetCreateDTO assetDTO) {
@@ -52,7 +65,10 @@ public class AssetServiceImpl implements AssetService   {
 		asset.setCategory(category);
 		asset.setStatus("Available");
 		Asset saved = assetRepo.save(asset);
-		saveHistory(saved,null,"CREATED");
+		
+		
+		Employee LoggedInemp = getLoggedInEmployee();
+		saveHistory(saved,LoggedInemp,"CREATED");
 		return asset;
 	}
 
@@ -126,8 +142,11 @@ public class AssetServiceImpl implements AssetService   {
 		        existing.setSerialNumber(assetDTO.getSerialNumber());
 
 		    Asset saved = assetRepo.save(existing);
+		    
 
-		    saveHistory(saved, saved.getAssignedTo(), "UPDATED");
+		    Employee LoggedInemp = getLoggedInEmployee();
+
+		    saveHistory(saved, LoggedInemp, "UPDATED");
 
 		    return saved;
 	}
@@ -154,8 +173,12 @@ public class AssetServiceImpl implements AssetService   {
 		 asset.setAssignedTo(emp);
 	     asset.setStatus("Assigned");
 	     
+	     
 	     Asset saved = assetRepo.save(asset);
-	        saveHistory(saved, emp, "ASSIGNED");
+	     
+
+	     Employee LoggedInemp = getLoggedInEmployee();
+	        saveHistory(saved, LoggedInemp, "ASSIGNED");
 
 	        return saved;
 	 
@@ -177,7 +200,10 @@ public class AssetServiceImpl implements AssetService   {
 	        asset.setStatus("Available");
 		
 	        Asset saved = assetRepo.save(asset);
-	        saveHistory(saved, emp, "REVOKED");
+	        
+	        
+	        Employee LoggedInemp = getLoggedInEmployee();
+	        saveHistory(saved, LoggedInemp, "REVOKED");
 
 	        return saved;
 	}

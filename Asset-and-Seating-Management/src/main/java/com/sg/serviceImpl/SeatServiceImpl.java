@@ -70,6 +70,14 @@ public class SeatServiceImpl implements SeatService{
 		}
 		
 		if(seatDTO.getStatus()!=null) {
+			if(seatDTO.getStatus().equals("Free")) {
+				Employee emp = employeeRepo.findBySeat_SeatId(seatId);
+				if(emp!=null) {
+					emp.setSeat(null);
+					employeeRepo.save(emp);
+				}
+				
+			}
 			existing.setStatus(seatDTO.getStatus());
 		}
 		

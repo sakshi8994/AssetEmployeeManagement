@@ -21,7 +21,8 @@ import EditAssetDialog from "./EditAssetDialog";
 
 import AddAssetDialog from "./AddAssetDialog";
 import { createAsset } from "../../apis/assetApi";
-
+import { useSnackbar } from "../../context/SnackbarContext";
+// import { useNavigate } from "react-router-dom";
 
 export default function AssetList() {
   const [rows, setRows] = useState([]);
@@ -418,6 +419,8 @@ setCategoryId={setCategoryId}
 categoryList={categoryList}
 clearFilters={clearFilters}
 />
+     
+   <Button onClick={()=>navigate("/dashboard")}>  Back</Button>
 
       {rows && (
         <DataGrid

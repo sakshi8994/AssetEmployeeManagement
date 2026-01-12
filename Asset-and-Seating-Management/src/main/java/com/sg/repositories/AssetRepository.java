@@ -15,4 +15,6 @@ public interface AssetRepository extends JpaRepository<Asset, Long> , JpaSpecifi
 
 	 List<Asset> findByCategory_CategoryId(Long categoryId);
 
+	 Long countByStatus(String string);
+
 }

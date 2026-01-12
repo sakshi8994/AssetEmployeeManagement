@@ -4,7 +4,7 @@ import React, { useEffect ,useState } from 'react'
 import SeatGrid from '../seats/SeatGrid'
 import { assignSeat, getSeatByStatus } from '../../apis/seatApi';
 
-function AssignSeatDialogForEmpPage({ openAssignSeatDialog,employee,setOpenAssignSeatDialog ,onAssigned}) {
+function AssignSeatDialogForEmpPage({ openAssignSeatDialog,employee,setOpenAssignSeatDialog ,onAssigned,newEmployee,onSeatSelected}) {
 
     const [seats,setSeats]=useState([]);
     const [selectedSeat,setSelectedSeat]=useState(null);
@@ -28,9 +28,23 @@ function AssignSeatDialogForEmpPage({ openAssignSeatDialog,employee,setOpenAssig
        
         if(!selectedSeat) return;
 
-        await assignSeat(selectedSeat.seatId , employee.employeeId);
+
+        if(newEmployee){
+           onSeatSelected(selectedSeat);
+        }else{
+               
+           await assignSeat(selectedSeat.seatId , employee.employeeId);
+            onAssigned();
+
+        }
+
+       
+
         
-          onAssigned();
+
+        
+        
+         
 
     }
    

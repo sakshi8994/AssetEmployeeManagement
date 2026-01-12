@@ -1,5 +1,8 @@
 package com.sg.serviceImpl;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.jspecify.annotations.Nullable;
@@ -50,8 +53,16 @@ public class AssetHistoryServiceImpl implements AssetHistoryService{
 
 	@Override
 	public @Nullable Page<AssetHistoryResponseDTO> search(Long historyId, String action, Long assetId, String assetTag,
-			Long employeeId, String employeeName, Pageable pageable) {
+			Long employeeId, String employeeName,LocalDate date, Pageable pageable) {
 		// TODO Auto-generated method stub
+		
+		 LocalDateTime start = date != null
+		            ? date.atStartOfDay()
+		            : null;
+
+		    LocalDateTime end = date != null
+		            ? date.atTime(LocalTime.MAX)
+		            : null;
 		
 		 Specification<AssetHistory> spec = Specification
 	             .where(AssetHistorySpecification.hasHistoryId(historyId))
@@ -59,16 +70,17 @@ public class AssetHistoryServiceImpl implements AssetHistoryService{
 	             .and(AssetHistorySpecification.hasEmployeeId(employeeId))
 	             .and(AssetHistorySpecification.hasEmployeeName(employeeName))
 	             .and(AssetHistorySpecification.hasAssetId(assetId))
-	             .and(AssetHistorySpecification.hasAssetTag(assetTag));
+	             .and(AssetHistorySpecification.hasAssetTag(assetTag))
+	             .and(AssetHistorySpecification.hasTimestampBetween(start, end));
          
 		 
 		 Page<AssetHistory>historyPage = historyRepo.findAll(spec, pageable);
 //	     Page<AssetHistoryResponseDTO> assetHistoryPage = historyRepo.findAll(spec, pageable);
 
 		 
-		 if (historyPage.isEmpty()) {
-		        throw new ResourceNotFoundException("No asset history found");
-		    }
+//		 if (historyPage.isEmpty()) {
+//		        throw new ResourceNotFoundException("No asset history found");
+//		    }
 	    return historyPage.map(DtoMapper::toDTO);
 		
 	}

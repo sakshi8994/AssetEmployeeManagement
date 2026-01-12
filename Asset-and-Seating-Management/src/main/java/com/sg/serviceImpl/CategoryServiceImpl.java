@@ -3,16 +3,22 @@ package com.sg.serviceImpl;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.sg.dto.CategoryDTO;
 import com.sg.entities.Category;
+import com.sg.entities.Employee;
 import com.sg.exception.ResourceNotFoundException;
 import com.sg.repositories.AssetHistoryRepository;
 import com.sg.repositories.AssetRepository;
 import com.sg.repositories.CategoryRepository;
 import com.sg.repositories.EmployeeRepository;
 import com.sg.services.CategoryService;
+import com.sg.specification.CategorySpecification;
+//import com.sg.specification.EmployeeSpecification;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,6 +27,8 @@ import lombok.RequiredArgsConstructor;
 public class CategoryServiceImpl implements CategoryService {
 
 	private final CategoryRepository categoryRepo;
+	
+	
 	
 	
 	@Override
@@ -80,6 +88,18 @@ public class CategoryServiceImpl implements CategoryService {
 			return categoryOptional.get();
 		}
 		return null;
+	}
+
+	@Override
+	public Page<Category> search(Long categoryId, String name, Pageable pageable) {
+		// TODO Auto-generated method stub
+		 Specification<Category> spec = Specification
+	             .where(CategorySpecification.hasCategoryId(categoryId))
+	             .and(CategorySpecification.hasCategoryName(name));
+		 
+		 Page<Category>categoryPage = categoryRepo.findAll(spec,pageable);
+		return categoryPage;
+		
 	}
 
 }

@@ -1,6 +1,7 @@
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 
+
 export const exportToExcel = (rows, fileName = "assets") => {
   const formattedData = rows.map((row) => ({
     "Asset Tag": row.assetTag,

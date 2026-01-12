@@ -5,17 +5,19 @@ import { Box, Typography,Chip ,Button} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete"
 import IconButton from "@mui/material/IconButton";
-import Snackbar from "@mui/material/Snackbar";
+// import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert"
 import EditEmployeeDialog from "../employees/EditEmployeeDialog"
-import { updateEmployee , deleteEmployee } from '../../apis/employeeApi';
+import { updateEmployee , deleteEmployee ,addEmployee } from '../../apis/employeeApi';
 import DeleteEmployeeDialog from "../employees/DeleteEmployeeDialog"
 import EmployeeFilter from "../employees/EmployeeFilter"
 import { exportToExcel } from "../../utils/exportToExcel";
 import DownloadIcon from "@mui/icons-material/Download";
 import AssignSeatDialog from '../seats/AssignSeatDialog';
 import AssignSeatDialogForEmpPage from './AssignSeatDialogForEmpPage';
-
+import AddEmployeeDialog from './AddEmployeeDialog';
+import { useSnackbar } from "../../context/SnackbarContext";
+import { useNavigate } from 'react-router-dom';
 
 function EmployeeList() {
 const [employees, setEmployees]=useState([]);
@@ -29,11 +31,11 @@ const [openEditEmp ,setOpenEditEmp]=useState(false);
 const [openDeleteEmp ,setOpenDeleteEmp]=useState(false);
 const [openAddSeat , setOpenAddSeat]=useState(false);
 const [selectedEmployee, setSelectedEmployee]=useState(null);
-const [snackbar , setSnackbar] = useState({
-    open:false,
-    message:"",
-    severity:"success"
-  });
+// const [snackbar , setSnackbar] = useState({
+//     open:false,
+//     message:"",
+//     severity:"success"
+//   });
 const [name , setName]=useState("");
 const [department , setDepartment]=useState("");
 const [designation ,setDesignation]=useState("");
@@ -41,6 +43,18 @@ const [email,setEmail] =useState("");
 const [employeeId ,setEmployeeId]  =useState("");
 const [seat , setSeat]=useState("");
 const [ openAssignSeatDialog,setOpenAssignSeatDialog] =useState(false);
+const [openAddEmployee, setOpenAddEmployee]=useState(false);
+// const [confirm, setConfirm] = useState({
+//   open: false,
+//   title: "",
+//   message: "",
+//   onConfirm: null,
+// });
+
+
+const navigate = useNavigate();
+
+const { showSnackbar } = useSnackbar();
 
 
 useEffect(()=>{
@@ -53,7 +67,11 @@ useEffect(()=>{
 },[page,pageSize]);
 
 useEffect(()=>{
-    loadEmployee();
+  const timer = setTimeout(()=>{
+loadEmployee();
+setPage(0);
+  },1000)
+    
 },[name,department,designation,email,employeeId,seat]);
 
 
@@ -75,7 +93,7 @@ try{
   console.log("Employee : ", res.data);
     setTotal(res.data.totalElements);
 }catch(error){
-  alert(error.response.messege || "Server error");
+  console.log(error || "Server error");
 }finally{
   setLoading(false);
 }
@@ -105,8 +123,11 @@ const openDeleteModal=(employee)=>{
 }
 
 
+
 const handleDeleteEmployee = async()=>{
   console.log(" deleted employee: ",selectedEmployee)
+
+ 
    try{
     
 const res = await deleteEmployee(selectedEmployee.employeeId);
@@ -142,13 +163,13 @@ showSnackbar("Employee Data Updated Successfully","success");
 
 }
 
-const showSnackbar = (message, severity) => {
-  setSnackbar({
-    open: true,
-    message,
-    severity,
-  });
-};
+// const showSnackbar = (message, severity) => {
+//   setSnackbar({
+//     open: true,
+//     message,
+//     severity,
+//   });
+// };
 
 const clearEmployeeFilters=()=>{
   setName("");
@@ -158,6 +179,22 @@ const clearEmployeeFilters=()=>{
   loadEmployee(0,pageSize);
 }
 
+const handleAddEmployee = async(employee)=>{
+  
+ 
+  try{
+      const res = await addEmployee(employee);
+      console.log(" Add Employee response : ",employee)
+      setOpenAddEmployee(false);
+      loadEmployee(page,pageSize);
+     
+
+  }catch(err){
+    console.log(err);
+  }
+
+
+}
 
 
 
@@ -250,6 +287,8 @@ const columns = [
         Employee
       </Typography>
 
+<Button onClick={()=>navigate("/dashboard")}>Back</Button>
+
       <Button
   variant="contained"
   color="success"
@@ -259,6 +298,14 @@ const columns = [
   Export Excel
 </Button>
 
+<Button 
+variant="contained"
+color="primary"
+onClick={() => setOpenAddEmployee(true)}
+   >
+  Add Employee
+</Button>
+<br/><br/>
       <EmployeeFilter
       name={name}
       setName={setName} 
@@ -329,9 +376,19 @@ const columns = [
 
        }
      />
+
+
+     <AddEmployeeDialog
+       openAddEmployee={openAddEmployee}
+       setOpenAddEmployee={setOpenAddEmployee}
+       onSave={handleAddEmployee}
+       openAssignSeatDialog={openAssignSeatDialog}
+       setOpenAssignSeatDialog={setOpenAssignSeatDialog}
+     />
+
     
 
-      <Snackbar
+      {/* <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
@@ -346,7 +403,7 @@ const columns = [
           {snackbar.message}
         </Alert>
 
-        </Snackbar>
+        </Snackbar> */}
     
    </Box>
   )

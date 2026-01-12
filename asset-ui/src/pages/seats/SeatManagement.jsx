@@ -10,7 +10,8 @@ import AssignSeatDialog from "../../components/seats/AssignSeatDialog";
 import { getAllEmployee } from "../../apis/employeeApi";
 import RevokeSeatDialog from "../../components/seats/RevokeSeatDialog";
 import SeatGrid from "../../components/seats/SeatGrid";
-
+import { useSnackbar } from "../../context/SnackbarContext";
+import { useNavigate } from "react-router-dom";
 
 function SeatManagement() {
 
@@ -43,17 +44,14 @@ const [errorMsg ,setErrorMsg]=useState("");
 const [openRevokeSeatDialog,setOpenRevokeSeatDialog]=useState(false);
 const [viewMode, setViewMode] = useState("table");
 
+const { showSnackbar } = useSnackbar();
+
 
 useEffect(()=>{
 loadSeats();
 },[])
 
-// useEffect(()=>{
-  
-  
-//    loadSeats();
 
-// },[pageSize ,page ,floor, seatId, status,colNum,rowNum])
 
 
 useEffect(() => {
@@ -64,6 +62,8 @@ useEffect(() => {
   }
 }, [viewMode, page, pageSize, floor, seatId, status, colNum, rowNum]);
 
+
+const navigate = useNavigate();
 
 const loadSeats = async()=>{
 setLoading(true);
@@ -83,10 +83,12 @@ const res = await searchSeats({
 setSeats(res.data.content);
 console.log("Seats : " ,seats);
 setTotal(res.data.totalElements)
+//  showSnackbar("seats load", "success");
 
 } catch(err){
 
 console.error("Failed to load seats", err);
+ showSnackbar(err.message, "error");
 
 }finally{
   setLoading(false); 
@@ -104,10 +106,10 @@ const  loadAllSeatsForGrid= async()=>{
 const res = await getAllSeats();
 setSeats(res.data);
 setTotalCount(res.data.length)
-console.log("Get All seats : ",res);
+
   }catch(err){
 
-    console.log(err);
+   showSnackbar(err.message, "error");
 
   }finally{
        setLoading(false);
@@ -140,6 +142,7 @@ try{
 
 }catch(err){
      console.log("Error at the time of deleting seat : ",err);
+      showSnackbar(err.message, "error");
 }
 
 }
@@ -160,6 +163,7 @@ const handleUpdateSeat = async()=>{
   loadSeats(page , pageSize)
   }catch(err){
          console.log("Error at time of updating seat : " , err);
+          showSnackbar(err.message, "error");
   }
  
 
@@ -175,6 +179,7 @@ const loadEmployees = async (payload)=>{
 
   }catch(err){
     console.log(err);
+    showSnackbar(err.message, "error");
   }finally{
     setLoading(false);
   }
@@ -187,6 +192,7 @@ const handleAddFloor = async (payload) => {
     console.log("Floor created:", res.data);
   } catch (err) {
     console.log(err);
+    showSnackbar(err.message, "error");
   } finally {
     setOpenAddFloorDialog(false);
   }
@@ -220,7 +226,7 @@ const handleAssignSeat = async()=>{
 
   }catch(err){
     console.log(err);
-
+      showSnackbar("failed to assign seat", "error");
   }finally{
     setOpenAssignSeat(false);
   }
@@ -233,6 +239,7 @@ const handleRevokeSeat= async()=>{
 
   }catch(err){
 console.log("err",err)
+showSnackbar("failed to revoke seat", "error");
   }finally{
     setOpenRevokeSeatDialog(false);
   }
@@ -275,6 +282,7 @@ const gridView=()=>{
         Seats
       </Typography>
 
+<Button onClick={()=>navigate("/dashboard")}>Back</Button>
      
 
 
