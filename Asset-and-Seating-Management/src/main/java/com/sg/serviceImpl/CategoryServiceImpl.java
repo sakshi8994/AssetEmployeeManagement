@@ -3,6 +3,8 @@ package com.sg.serviceImpl;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -32,6 +34,7 @@ public class CategoryServiceImpl implements CategoryService {
 	
 	
 	@Override
+	@CacheEvict(value="categories" , allEntries=true)
 	public Category addCategory(CategoryDTO categoryDTO) {
 		// TODO Auto-generated method stub
 		String categoryName = categoryDTO.getName();
@@ -57,12 +60,14 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
+	@Cacheable(value="categories")
 	public List<Category> getAllCategory() {
 		// TODO Auto-generated method stub
 		List<Category> categoryList=categoryRepo.findAll();
 		return categoryList;
 	}
-
+	
+	@CacheEvict(value="categories" , allEntries=true)
 	@Override
 	public void deleteCategory(Long categoryId) {
 		// TODO Auto-generated method stub
@@ -71,6 +76,7 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
+	@CacheEvict(value="categories" , allEntries=true)
 	public Category updateCategory(Long categoryId, CategoryDTO categoryDTO) {
 		// TODO Auto-generated method stub
 		 Category category = categoryRepo.findById(categoryId)

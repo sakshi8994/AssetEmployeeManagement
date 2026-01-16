@@ -1,7 +1,9 @@
 package com.sg.serviceImpl;
 
 import java.util.List;
+import java.util.UUID;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -17,7 +19,9 @@ import com.sg.repositories.SeatRepository;
 import com.sg.services.SeatService;
 import com.sg.specification.AssetSpecification;
 import com.sg.specification.SeatSpecification;
+import com.sg.utils.RedisLockUtil;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -27,8 +31,11 @@ public class SeatServiceImpl implements SeatService{
 	private final SeatRepository seatRepo;
 	
 	private final EmployeeRepository employeeRepo;
+	
+	private final RedisLockUtil redisLockUtil;
 
 	@Override
+	@CacheEvict(value="dashboardSummary" , allEntries=true)
 	public Seat createSeat(SeatDTO seatDTO) {
 		// TODO Auto-generated method stub
 		Seat seat = new Seat();
@@ -52,6 +59,7 @@ public class SeatServiceImpl implements SeatService{
 	}
 
 	@Override
+	@CacheEvict(value="dashboardSummary" , allEntries=true)
 	public Seat updateSeat(Long seatId, SeatDTO seatDTO) {
 		// TODO Auto-generated method stub
 		Seat existing =  seatRepo.findById(seatId)
@@ -85,6 +93,7 @@ public class SeatServiceImpl implements SeatService{
 	}
 
 	@Override
+	@CacheEvict(value="dashboardSummary" , allEntries=true)
 	public void deleteSeat(Long seatId) {
 		// TODO Auto-generated method stub
 		
@@ -94,8 +103,21 @@ public class SeatServiceImpl implements SeatService{
 	}
 
 	@Override
+	@CacheEvict(value="dashboardSummary" , allEntries=true)
+	@Transactional
 	public Seat assignSeat(Long seatId, Long employeeId) {
 		// TODO Auto-generated method stub
+		
+		
+		String lockKey = "seat:lock"+seatId;
+		String lockValue = UUID.randomUUID().toString();
+		
+		if(!redisLockUtil.acquireLock(lockKey,lockValue , 10)) {
+			 
+			  throw new RuntimeException("Seat is being assigned by another user. Please try again.");
+		}
+		
+		try {
 		
 		Seat seat  = seatRepo.findById(seatId)
 				.orElseThrow(()->new ResourceNotFoundException("Seat not found with id: " + seatId));
@@ -116,9 +138,14 @@ public class SeatServiceImpl implements SeatService{
 	     
 		
 		return seatRepo.save(seat);
+		}finally {
+			redisLockUtil.releaseLock(lockKey, lockValue);
+		}
 	}
 
 	@Override
+	@CacheEvict(value="dashboardSummary" , allEntries=true)
+	@Transactional
 	public Seat releaseSeat(Long seatId) {
 		// TODO Auto-generated method stub
 		Seat seat = seatRepo.findById(seatId)
@@ -168,6 +195,7 @@ public class SeatServiceImpl implements SeatService{
 	}
 
 	@Override
+	@CacheEvict(value="dashboardSummary" , allEntries=true)
 	public void createFloor(Integer floor, Integer columns, Integer rows) {
 		// TODO Auto-generated method stub
 		

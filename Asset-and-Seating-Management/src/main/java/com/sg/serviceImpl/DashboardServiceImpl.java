@@ -1,5 +1,8 @@
 package com.sg.serviceImpl;
 
+
+
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.sg.dto.DashboardSummaryDTO;
@@ -8,7 +11,11 @@ import com.sg.repositories.CategoryRepository;
 import com.sg.repositories.SeatRepository;
 import com.sg.services.DashboardService;
 
+
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 @Service
 @RequiredArgsConstructor
@@ -16,10 +23,14 @@ public class DashboardServiceImpl implements DashboardService {
 	
 	private final AssetRepository assetRepo;
 	private final SeatRepository seatRepo;
-
+	
+	private static final Logger log =
+            LoggerFactory.getLogger(DashboardServiceImpl.class);
 	@Override
+	@Cacheable(value="dashboardSummary" , key="'summary'")
 	public DashboardSummaryDTO getSummary() {
 		// TODO Auto-generated method stub
+		log.warn("Dashboard method executed");
 		DashboardSummaryDTO summaryDTO = new DashboardSummaryDTO();
 		
 //		"totalAssets": 120,

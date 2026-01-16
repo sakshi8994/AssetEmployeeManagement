@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -13,11 +14,13 @@ import org.springframework.stereotype.Service;
 
 import com.sg.dto.AssetCreateDTO;
 import com.sg.dto.AssetUpdateDTO;
+import com.sg.dto.AuditEvent;
 import com.sg.entities.Asset;
 import com.sg.entities.AssetHistory;
 import com.sg.entities.Category;
 import com.sg.entities.Employee;
 import com.sg.exception.ResourceNotFoundException;
+import com.sg.kafka.AuditProducer;
 import com.sg.repositories.AssetHistoryRepository;
 import com.sg.repositories.AssetRepository;
 import com.sg.repositories.CategoryRepository;
@@ -40,6 +43,8 @@ public class AssetServiceImpl implements AssetService   {
 	private final AssetHistoryRepository historyRepo;
 	 private final CategoryRepository categoryRepo;
 	 
+	 private final AuditProducer auditProducer;
+	 
 	 private Employee getLoggedInEmployee() {
 		 Object principal = SecurityContextHolder
 				 .getContext()
@@ -54,6 +59,7 @@ public class AssetServiceImpl implements AssetService   {
 	 }
 
 	@Override
+	@CacheEvict(value="dashboardSummary" , allEntries=true)
 	public Asset createAsset( AssetCreateDTO assetDTO) {
 		// TODO Auto-generated method stub
 		Category category = categoryRepo.findById(assetDTO.getCategoryId()).get();
@@ -68,7 +74,18 @@ public class AssetServiceImpl implements AssetService   {
 		
 		
 		Employee LoggedInemp = getLoggedInEmployee();
-		saveHistory(saved,LoggedInemp,"CREATED");
+//		saveHistory(saved,LoggedInemp,"CREATED");
+		
+		  
+	 	auditProducer.publish(
+		    new AuditEvent(
+		        "ASSET",
+		        "CREATED",
+		        asset.getAssetId(),
+		        LoggedInemp.getEmployeeId(),
+		        LocalDateTime.now()
+		    )
+		);
 		return asset;
 	}
 
@@ -88,6 +105,7 @@ public class AssetServiceImpl implements AssetService   {
 	}
 
 	@Override
+	@CacheEvict(value="dashboardSummary" , allEntries=true)
 	public Asset updateAsset(Long id, AssetUpdateDTO  assetDTO) {
 		// TODO Auto-generated method stub
 		
@@ -145,13 +163,25 @@ public class AssetServiceImpl implements AssetService   {
 		    
 
 		    Employee LoggedInemp = getLoggedInEmployee();
+		    
+		    
+		    auditProducer.publish(
+				    new AuditEvent(
+				        "ASSET",
+				        "UPDATED",
+				        id,
+				        LoggedInemp.getEmployeeId(),
+				        LocalDateTime.now()
+				    )
+				);
 
-		    saveHistory(saved, LoggedInemp, "UPDATED");
+//		    saveHistory(saved, LoggedInemp, "UPDATED");
 
 		    return saved;
 	}
 
 	@Override
+	@CacheEvict(value="dashboardSummary" , allEntries=true)
 	public void deleteAsset(Long assetId) {
 		// TODO Auto-generated method stub
 		assetRepo.deleteById(assetId);
@@ -159,6 +189,7 @@ public class AssetServiceImpl implements AssetService   {
 	}
 
 	@Override
+	@CacheEvict(value="dashboardSummary" , allEntries=true)
 	public Asset assignAsset(Long assetId, Long empId) {
 		// TODO Auto-generated method stub
 		
@@ -178,13 +209,25 @@ public class AssetServiceImpl implements AssetService   {
 	     
 
 	     Employee LoggedInemp = getLoggedInEmployee();
-	        saveHistory(saved, LoggedInemp, "ASSIGNED");
+	     
+	 	auditProducer.publish(
+		    new AuditEvent(
+		        "ASSET",
+		        "ASSIGNED",
+		        asset.getAssetId(),
+		        LoggedInemp.getEmployeeId(),
+		        LocalDateTime.now()
+		    )
+		);
+
+//	        saveHistory(saved, LoggedInemp, "ASSIGNED");
 
 	        return saved;
 	 
 	}
 
 	@Override
+	@CacheEvict(value="dashboardSummary" , allEntries=true)
 	public Asset revokeAsset(Long assetId) {
 		// TODO Auto-generated method stub
 		Asset asset = assetRepo.findById(assetId)
@@ -203,19 +246,30 @@ public class AssetServiceImpl implements AssetService   {
 	        
 	        
 	        Employee LoggedInemp = getLoggedInEmployee();
-	        saveHistory(saved, LoggedInemp, "REVOKED");
-
+//	        saveHistory(saved, LoggedInemp, "REVOKED");
+     
+	        
+		 	auditProducer.publish(
+			    new AuditEvent(
+			        "ASSET",
+			        "REVOKE",
+			        asset.getAssetId(),
+			        LoggedInemp.getEmployeeId(),
+			        LocalDateTime.now()
+			    )
+			);
+	        
 	        return saved;
 	}
 	
-	 private void saveHistory(Asset asset, Employee emp, String action) {
-	        AssetHistory history = new AssetHistory();
-	        history.setAsset(asset);
-	        history.setEmployee(emp);
-	        history.setAction(action);
-	        history.setTimestamp(LocalDateTime.now());
-	        historyRepo.save(history);
-	    }
+//	 private void saveHistory(Asset asset, Employee emp, String action) {
+//	        AssetHistory history = new AssetHistory();
+//	        history.setAsset(asset);
+//	        history.setEmployee(emp);
+//	        history.setAction(action);
+//	        history.setTimestamp(LocalDateTime.now());
+//	        historyRepo.save(history);
+//	    }
 
 	 @Override
 	 public List<Asset> getListByStatus(String status) {

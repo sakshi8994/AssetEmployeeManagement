@@ -3,6 +3,7 @@ package com.sg.serviceImpl;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -40,6 +41,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 
 
 	@Override
+	@CacheEvict(value="dashboardSummary" , allEntries=true)
 	public Employee createEmployee(EmployeeDTO employeeDTO) {
 		// TODO Auto-generated method stub
 		
@@ -81,6 +83,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 	}
 
 	@Override
+	@CacheEvict(value="dashboardSummary" , allEntries=true)
 	public Employee updateEmployee(Long id, EmployeeDTO employeeDTO) {
 		// TODO Auto-generated method stub
 		Employee existing = employeeRepo.findById(id)
@@ -115,6 +118,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 	}
 
 	@Override
+	@CacheEvict(value="dashboardSummary" , allEntries=true)
 	public void deleteEmployee(Long id) {
 		// TODO Auto-generated method stub
 		Employee emp = employeeRepo.findById(id).get();
