@@ -41,6 +41,10 @@ public class SecurityConfig {
 	            .requestMatchers("/api/seats/**").hasAnyRole( "USER","ADMIN")
 	            .requestMatchers("/api/history/**").hasAnyRole( "USER","ADMIN")
 	            .requestMatchers("/api/category/**").hasAnyRole( "USER","ADMIN")
+	            .requestMatchers(
+	                    "/auth/**",
+	                    "/ws/**"        // ✅ ADD THIS
+	                ).permitAll()
 //	            .requestMatchers("/api/category/**").permitAll()
 	            .anyRequest().authenticated()
 	        )

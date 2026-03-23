@@ -7,7 +7,7 @@ import { getDashboardSummary } from "../../apis/dashboardApi";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { useNavigate } from "react-router-dom";
 import { isAdmin } from "../../utils/auth";
-
+import {connectWebSocket , disconnectWebSocket} from "../../utils/websocket"
 export default function Dashboard() {
 
     const { showSnackbar } = useSnackbar();
@@ -17,6 +17,18 @@ export default function Dashboard() {
   useEffect(() => {
     loadDashboard();
   }, []);
+
+
+  useEffect(() => {
+    connectWebSocket((event) => {
+      console.log("dashboard update received", event);
+      loadDashboard();
+    });
+  
+    return () => disconnectWebSocket();
+  }, []);
+  
+
 
   const loadDashboard = async () => {
     

@@ -2,6 +2,7 @@ package com.sg.serviceImpl;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import com.sg.repositories.EmployeeRepository;
 import com.sg.security.CustomUserDetails;
 import com.sg.services.AssetService;
 import com.sg.specification.AssetSpecification;
+import com.sg.websocket.NotificationService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -42,6 +44,9 @@ public class AssetServiceImpl implements AssetService   {
 	
 	private final AssetHistoryRepository historyRepo;
 	 private final CategoryRepository categoryRepo;
+	 private final NotificationService notificationService;
+	 
+	 
 	 
 	 private final AuditProducer auditProducer;
 	 
@@ -174,6 +179,14 @@ public class AssetServiceImpl implements AssetService   {
 				        LocalDateTime.now()
 				    )
 				);
+		    
+		    notificationService.notifyAssetUpdate(
+		 		    Map.of(
+		 		        "assetId", id,
+		 		        "status", "ASSIGNED"
+		 		     
+		 		    )
+		 		);
 
 //		    saveHistory(saved, LoggedInemp, "UPDATED");
 
@@ -221,6 +234,15 @@ public class AssetServiceImpl implements AssetService   {
 		);
 
 //	        saveHistory(saved, LoggedInemp, "ASSIGNED");
+	 	
+	 	notificationService.notifyAssetUpdate(
+	 		    Map.of(
+	 		        "assetId", assetId,
+	 		        "status", "ASSIGNED",
+	 		        "employeeId", empId
+	 		    )
+	 		);
+
 
 	        return saved;
 	 
@@ -258,6 +280,15 @@ public class AssetServiceImpl implements AssetService   {
 			        LocalDateTime.now()
 			    )
 			);
+		 	
+		 	notificationService.notifyAssetUpdate(
+		 		    Map.of(
+		 		        "assetId", assetId,
+		 		        "status", "ASSIGNED",
+		 		        "employeeId", emp.getEmployeeId()
+		 		    )
+		 		);
+
 	        
 	        return saved;
 	}

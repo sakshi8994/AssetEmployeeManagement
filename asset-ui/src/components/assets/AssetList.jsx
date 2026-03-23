@@ -23,6 +23,8 @@ import AddAssetDialog from "./AddAssetDialog";
 import { createAsset } from "../../apis/assetApi";
 import { useSnackbar } from "../../context/SnackbarContext";
 // import { useNavigate } from "react-router-dom";
+import { connectWebSocket , disconnectWebSocket} from "../../utils/websocket"
+
 
 export default function AssetList() {
   const [rows, setRows] = useState([]);
@@ -65,6 +67,15 @@ const [openAdd, setOpenAdd] = useState(false);
    getCategoryList();
   }, []);
 
+
+useEffect(() => {
+  connectWebSocket((event) => {
+    console.log("asset update received", event);
+    loadAssets();
+  });
+
+  return () => disconnectWebSocket();
+}, []);
 
 
   useEffect(() => {

@@ -12,6 +12,7 @@ import RevokeSeatDialog from "../../components/seats/RevokeSeatDialog";
 import SeatGrid from "../../components/seats/SeatGrid";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { useNavigate } from "react-router-dom";
+import {connectWebSocket,disconnectWebSocket} from "../../utils/websocket"
 
 function SeatManagement() {
 
@@ -43,8 +44,9 @@ const [errorMsg ,setErrorMsg]=useState("");
 
 const [openRevokeSeatDialog,setOpenRevokeSeatDialog]=useState(false);
 const [viewMode, setViewMode] = useState("table");
+const [seatGrid , setSeatGrid]=useState([])
 
-const { showSnackbar } = useSnackbar();
+const { showSnackbar  } = useSnackbar();
 
 
 useEffect(()=>{
@@ -61,6 +63,17 @@ useEffect(() => {
     loadAllSeatsForGrid();
   }
 }, [viewMode, page, pageSize, floor, seatId, status, colNum, rowNum]);
+
+
+useEffect(() => {
+  connectWebSocket((event) => {
+    console.log("Seat update received", event);
+    loadSeats();
+    loadAllSeatsForGrid();
+  });
+
+  return () => disconnectWebSocket();
+}, []);
 
 
 const navigate = useNavigate();
@@ -104,7 +117,8 @@ const  loadAllSeatsForGrid= async()=>{
   setLoading(true);
   try{
 const res = await getAllSeats();
-setSeats(res.data);
+// setSeats(res.data);
+ setSeatGrid(res.data);
 setTotalCount(res.data.length)
 
   }catch(err){
@@ -327,7 +341,7 @@ const gridView=()=>{
 
   />
 ) : (
-  <SeatGrid seats={seats} />
+  <SeatGrid seats={seatGrid} />
 )}
 
 

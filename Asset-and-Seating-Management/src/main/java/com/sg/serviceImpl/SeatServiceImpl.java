@@ -1,9 +1,11 @@
 package com.sg.serviceImpl;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -13,6 +15,7 @@ import com.sg.dto.SeatDTO;
 import com.sg.entities.Asset;
 import com.sg.entities.Employee;
 import com.sg.entities.Seat;
+import com.sg.events.SeatAssignedEvent;
 import com.sg.exception.ResourceNotFoundException;
 import com.sg.repositories.EmployeeRepository;
 import com.sg.repositories.SeatRepository;
@@ -20,6 +23,7 @@ import com.sg.services.SeatService;
 import com.sg.specification.AssetSpecification;
 import com.sg.specification.SeatSpecification;
 import com.sg.utils.RedisLockUtil;
+import com.sg.websocket.NotificationService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +37,10 @@ public class SeatServiceImpl implements SeatService{
 	private final EmployeeRepository employeeRepo;
 	
 	private final RedisLockUtil redisLockUtil;
+	
+	private final NotificationService notificationService ;
+	
+	 private final ApplicationEventPublisher eventPublisher;
 
 	@Override
 	@CacheEvict(value="dashboardSummary" , allEntries=true)
@@ -62,6 +70,8 @@ public class SeatServiceImpl implements SeatService{
 	@CacheEvict(value="dashboardSummary" , allEntries=true)
 	public Seat updateSeat(Long seatId, SeatDTO seatDTO) {
 		// TODO Auto-generated method stub
+		
+		Employee emp = employeeRepo.findBySeat_SeatId(seatId);
 		Seat existing =  seatRepo.findById(seatId)
                 .orElseThrow(() -> new ResourceNotFoundException("Seat not found with id: " + seatId));
 		
@@ -79,7 +89,7 @@ public class SeatServiceImpl implements SeatService{
 		
 		if(seatDTO.getStatus()!=null) {
 			if(seatDTO.getStatus().equals("Free")) {
-				Employee emp = employeeRepo.findBySeat_SeatId(seatId);
+				
 				if(emp!=null) {
 					emp.setSeat(null);
 					employeeRepo.save(emp);
@@ -88,6 +98,18 @@ public class SeatServiceImpl implements SeatService{
 			}
 			existing.setStatus(seatDTO.getStatus());
 		}
+		
+		
+		 notificationService.notifySeatUpdate(
+	    		    Map.of(
+	    		        "seatId", seatId,
+	    		        "status", seatDTO.getStatus(),
+	    		        "employeeId", emp.getEmployeeId()
+	    		    )	    		);
+		
+		
+		
+
 		
 		return seatRepo.save(existing);
 	}
@@ -135,7 +157,19 @@ public class SeatServiceImpl implements SeatService{
 		seat.setStatus("Occupied");
 	     employee.setSeat(seat);
 	     employeeRepo.save(employee);
+//	     notificationService.notifySeatUpdate(
+//	    		    Map.of(
+//	    		        "seatId", seat.getSeatId(),
+//	    		        "status", seat.getStatus(),
+//	    		        "employeeId", employee.getEmployeeId()
+//	    		    )
+//	    		);
 	     
+	     
+	     eventPublisher.publishEvent(
+	    	        new SeatAssignedEvent(seatId, employee.getEmployeeId())
+	    	    );
+
 		
 		return seatRepo.save(seat);
 		}finally {
@@ -165,6 +199,19 @@ public class SeatServiceImpl implements SeatService{
 		seat.setStatus("Free");
 		
 		employeeRepo.save(employee);
+		
+		 notificationService.notifySeatUpdate(
+	    		    Map.of(
+	    		        "seatId", seat.getSeatId(),
+	    		        "status", seat.getStatus(),
+	    		        "employeeId", employee.getEmployeeId()
+	    		    )
+	    		);
+		 
+//		  eventPublisher.publishEvent(
+//	    	        new SeatAssignedEvent(seatId, employee.getEmployeeId())
+//	    	    );
+
 		return seatRepo.save(seat);
 		
 	}

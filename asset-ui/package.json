@@ -16,6 +16,7 @@
     "@mui/material": "^7.3.6",
     "@mui/x-data-grid": "^8.22.1",
     "@mui/x-date-pickers": "^8.23.0",
+    "@stomp/stompjs": "^7.2.1",
     "axios": "^1.13.2",
     "bootstrap": "^5.3.8",
     "dayjs": "^1.11.19",
@@ -24,6 +25,8 @@
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.11.0",
     "recharts": "^3.6.0",
+    "sockjs-client": "^1.6.1",
+    "stompjs": "^2.3.3",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
